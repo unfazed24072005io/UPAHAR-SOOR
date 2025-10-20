@@ -1,0 +1,28 @@
+name: upahar_customer
+description: Upahar Customer App
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  google_fonts: ^4.0.3
+  carousel_slider: ^4.2.1
+  flutter_rating_bar: ^4.0.1
+  provider: ^6.0.5
+  shared_models:
+    path: ../shared_models
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
