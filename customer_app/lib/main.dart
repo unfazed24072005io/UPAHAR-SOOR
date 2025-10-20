@@ -35,12 +35,22 @@ class MyApp extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
+        // FIXED: Use CardThemeData instead of CardTheme
         cardTheme: const CardTheme(
           elevation: 0,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.all(Radius.circular(16)),
           ),
           color: AppConfig.cardColor,
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: AppConfig.cardColor,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         ),
         textTheme: const TextTheme(
           displayLarge: TextStyle(
@@ -67,5 +77,4 @@ class MyApp extends StatelessWidget {
       home: const HomeScreen(),
     );
   }
-
 }
