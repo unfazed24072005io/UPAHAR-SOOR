@@ -1,0 +1,60 @@
+workflows:
+  upahar-customer:
+    name: Upahar Customer App
+    environment:
+      groups:
+        - keystore_reference
+      vars:
+        PACKAGE_NAME: "com.upahar.customer"
+      flutter: stable
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: 'main'
+          include: true
+    scripts:
+      - name: Get Flutter packages
+        script: |
+          cd customer_app
+          flutter pub get
+      - name: Run tests
+        script: |
+          cd customer_app
+          flutter test
+      - name: Build Android APK
+        script: |
+          cd customer_app
+          flutter build apk --release
+    artifacts:
+      - customer_app/build/app/outputs/flutter-apk/*.apk
+
+  upahar-vendor:
+    name: Upahar Vendor App
+    environment:
+      groups:
+        - keystore_reference
+      vars:
+        PACKAGE_NAME: "com.upahar.vendor"
+      flutter: stable
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: 'main'
+          include: true
+    scripts:
+      - name: Get Flutter packages
+        script: |
+          cd vendor_app
+          flutter pub get
+      - name: Run tests
+        script: |
+          cd vendor_app
+          flutter test
+      - name: Build Android APK
+        script: |
+          cd vendor_app
+          flutter build apk --release
+    artifacts:
+      - vendor_app/build/app/outputs/flutter-apk/*.apk
