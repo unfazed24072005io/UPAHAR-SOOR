@@ -6,6 +6,10 @@ workflows:
         PACKAGE_NAME: "com.upahar.customer"
       flutter: stable
     scripts:
+      - name: Create Flutter project structure
+        script: |
+          cd customer_app
+          flutter create --org com.upahar --project-name upahar_customer .
       - name: Get packages and build
         script: |
           cd customer_app
@@ -21,6 +25,10 @@ workflows:
         PACKAGE_NAME: "com.upahar.vendor"
       flutter: stable
     scripts:
+      - name: Create Flutter project structure
+        script: |
+          cd vendor_app
+          flutter create --org com.upahar --project-name upahar_vendor .
       - name: Get packages and build
         script: |
           cd vendor_app
