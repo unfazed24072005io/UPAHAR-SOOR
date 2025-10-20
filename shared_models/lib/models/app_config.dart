@@ -1,5 +1,6 @@
+import 'package:flutter/material.dart';
+
 class AppConfig {
-  static const String appName = 'Upahar';
   static const Color primaryColor = Color(0xFFFFD700);
   static const Color backgroundColor = Color(0xFFFFFFFF);
   static const Color cardColor = Color(0xFFF8F9FA);
