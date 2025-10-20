@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        cardTheme: CardTheme(
+        cardTheme: const CardTheme(
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
@@ -67,4 +67,5 @@ class MyApp extends StatelessWidget {
       home: const HomeScreen(),
     );
   }
+
 }
