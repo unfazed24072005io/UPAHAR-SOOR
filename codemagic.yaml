@@ -10,10 +10,10 @@ workflows:
         script: |
           cd shared_models
           flutter pub get
-      - name: Setup customer app
+      - name: Create proper Flutter project structure
         script: |
           cd customer_app
-          flutter pub get
+          flutter create --org com.upahar --project-name upahar_customer .
       - name: Build customer APK
         script: |
           cd customer_app
@@ -32,10 +32,10 @@ workflows:
         script: |
           cd shared_models
           flutter pub get
-      - name: Setup vendor app
+      - name: Create proper Flutter project structure
         script: |
           cd vendor_app
-          flutter pub get
+          flutter create --org com.upahar --project-name upahar_vendor .
       - name: Build vendor APK
         script: |
           cd vendor_app
