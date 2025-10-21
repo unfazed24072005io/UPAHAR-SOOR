@@ -35,12 +35,14 @@ class MyApp extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        cardTheme: CardTheme(
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: AppConfig.cardColor,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
           ),
-          color: AppConfig.cardColor,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         ),
         textTheme: const TextTheme(
           displayLarge: TextStyle(
@@ -62,6 +64,7 @@ class MyApp extends StatelessWidget {
             color: AppConfig.textSecondary,
           ),
         ),
+        useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,
       home: const VendorHomeScreen(),
