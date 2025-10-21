@@ -13,6 +13,8 @@ class Product {
   final int stockQuantity;
   final bool isActive;
   final bool isFeatured;
+  final List<String> tags;
+  final Map<String, dynamic> specifications;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -31,13 +33,18 @@ class Product {
     this.stockQuantity = 0,
     this.isActive = true,
     this.isFeatured = false,
+    this.tags = const [],
+    this.specifications = const {},
     required this.createdAt,
     required this.updatedAt,
   });
 
+  // ADD THESE GETTERS BACK:
   double get displayPrice => customerPrice ?? basePrice;
+  double get discountPercent => ((basePrice - displayPrice) / basePrice) * 100;
+  bool get hasDiscount => displayPrice < basePrice;
+  bool get inStock => stockQuantity > 0;
 
-  // SIMPLE copyWith method - ONLY for customerPrice
   Product copyWith({
     double? customerPrice,
   }) {
@@ -56,6 +63,8 @@ class Product {
       stockQuantity: stockQuantity,
       isActive: isActive,
       isFeatured: isFeatured,
+      tags: tags,
+      specifications: specifications,
       createdAt: createdAt,
       updatedAt: updatedAt,
     );
@@ -77,6 +86,8 @@ class Product {
       'stockQuantity': stockQuantity,
       'isActive': isActive,
       'isFeatured': isFeatured,
+      'tags': tags,
+      'specifications': specifications,
       'createdAt': createdAt.millisecondsSinceEpoch,
       'updatedAt': updatedAt.millisecondsSinceEpoch,
     };
@@ -98,6 +109,8 @@ class Product {
       stockQuantity: map['stockQuantity'] ?? 0,
       isActive: map['isActive'] ?? true,
       isFeatured: map['isFeatured'] ?? false,
+      tags: List<String>.from(map['tags'] ?? []),
+      specifications: Map<String, dynamic>.from(map['specifications'] ?? {}),
       createdAt: DateTime.fromMillisecondsSinceEpoch(map['createdAt'] ?? 0),
       updatedAt: DateTime.fromMillisecondsSinceEpoch(map['updatedAt'] ?? 0),
     );
