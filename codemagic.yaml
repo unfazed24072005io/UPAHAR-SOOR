@@ -6,18 +6,18 @@ workflows:
         PACKAGE_NAME: "com.upahar.customer"
       flutter: stable
     scripts:
-      - name: Get shared_models dependencies
+      - name: Setup shared models
         script: |
           cd shared_models
           flutter pub get
-      - name: Create proper Flutter project structure
+      - name: Setup customer app
         script: |
           cd customer_app
-          flutter create --org com.upahar --project-name upahar_customer .
+          flutter pub get
       - name: Build customer APK
         script: |
           cd customer_app
-          flutter build apk --release
+          flutter build apk --release --no-tree-shake-icons
     artifacts:
       - customer_app/build/app/outputs/flutter-apk/*.apk
 
@@ -28,17 +28,17 @@ workflows:
         PACKAGE_NAME: "com.upahar.vendor"
       flutter: stable
     scripts:
-      - name: Get shared_models dependencies
+      - name: Setup shared models
         script: |
           cd shared_models
           flutter pub get
-      - name: Create proper Flutter project structure
+      - name: Setup vendor app
         script: |
           cd vendor_app
-          flutter create --org com.upahar --project-name upahar_vendor .
+          flutter pub get
       - name: Build vendor APK
         script: |
           cd vendor_app
-          flutter build apk --release
+          flutter build apk --release --no-tree-shake-icons
     artifacts:
       - vendor_app/build/app/outputs/flutter-apk/*.apk
