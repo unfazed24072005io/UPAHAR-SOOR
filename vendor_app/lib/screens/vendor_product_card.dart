@@ -5,8 +5,15 @@ import 'package:shared_models/models/app_config.dart';
 
 class VendorProductCard extends StatelessWidget {
   final Product product;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
 
-  const VendorProductCard({super.key, required this.product});
+  const VendorProductCard({
+    super.key, 
+    required this.product,
+    this.onEdit,
+    this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +40,7 @@ class VendorProductCard extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
               image: DecorationImage(
-                image: NetworkImage(product.imageUrl),
+                image: NetworkImage(product.imageUrl ?? ''),
                 fit: BoxFit.cover,
               ),
             ),
@@ -66,7 +73,7 @@ class VendorProductCard extends StatelessWidget {
                   Row(
                     children: [
                       RatingBar.builder(
-                        initialRating: product.rating,
+                        initialRating: product.rating ?? 0,
                         minRating: 1,
                         direction: Axis.horizontal,
                         allowHalfRating: true,
@@ -82,7 +89,7 @@ class VendorProductCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        '(${product.reviewCount})',
+                        '(${product.reviewCount ?? 0})',
                         style: TextStyle(
                           fontSize: 10,
                           color: AppConfig.textSecondary,
@@ -123,31 +130,37 @@ class VendorProductCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    color: AppConfig.primaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(
-                    Icons.edit,
-                    color: AppConfig.primaryColor,
-                    size: 16,
+                GestureDetector(
+                  onTap: onEdit,
+                  child: Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: AppConfig.primaryColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      Icons.edit,
+                      color: AppConfig.primaryColor,
+                      size: 16,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 8),
-                Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    color: Colors.red.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(
-                    Icons.delete,
-                    color: Colors.red,
-                    size: 16,
+                GestureDetector(
+                  onTap: onDelete,
+                  child: Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: Colors.red.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      Icons.delete,
+                      color: Colors.red,
+                      size: 16,
+                    ),
                   ),
                 ),
               ],
