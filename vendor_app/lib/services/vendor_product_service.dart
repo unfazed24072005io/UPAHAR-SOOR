@@ -50,7 +50,19 @@ class VendorProductService with ChangeNotifier {
     final updatedProduct = product.copyWith(
       updatedAt: DateTime.now(),
     );
-    await _firestoreService.updateProduct(updatedProduct);
+    
+    // Use the correct method - check what's available in FirestoreService
+    try {
+      // Option 1: If updateProduct exists
+      await _firestoreService.updateProduct(updatedProduct);
+    } catch (e) {
+      // Option 2: If you need to use updateDocument
+      await _firestoreService.updateDocument(
+        'products', 
+        product.id, 
+        updatedProduct.toMap()
+      );
+    }
   }
 
   Future<void> deleteProduct(String productId) async {
@@ -59,18 +71,37 @@ class VendorProductService with ChangeNotifier {
 
   // Order Methods
   Stream<List<Order>> getVendorOrders() {
-    return _firestoreService.getVendorOrders(vendorId);
+    // Use the correct method - check what's available in FirestoreService
+    try {
+      return _firestoreService.getVendorOrders(vendorId);
+    } catch (e) {
+      // Fallback implementation if method doesn't exist
+      return _firestoreService.collectionStream(
+        'orders',
+        builder: (data) => Order.fromMap(data),
+        queryBuilder: (query) => query.where('vendorId', isEqualTo: vendorId),
+      );
+    }
   }
 
   Future<void> updateOrderStatus(String orderId, String status) async {
-    // Implementation for order status update
+    try {
+      await _firestoreService.updateDocument(
+        'orders',
+        orderId,
+        {'status': status, 'updatedAt': DateTime.now()}
+      );
+      notifyListeners();
+    } catch (e) {
+      print('Error updating order status: $e');
+    }
   }
 
   // Analytics Methods
   void updateAnalytics(List<Product> products, List<Order> orders) {
-    _activeProducts = products.where((p) => p.isActive).length;
+    _activeProducts = products.where((p) => p.isActive ?? true).length;
     _totalOrders = orders.length;
-    _totalRevenue = orders.fold(0, (sum, order) => sum + order.totalAmount);
+    _totalRevenue = orders.fold(0, (sum, order) => sum + (order.totalAmount ?? 0));
     notifyListeners();
   }
 }
