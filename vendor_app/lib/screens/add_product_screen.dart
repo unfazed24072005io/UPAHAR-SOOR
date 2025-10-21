@@ -231,39 +231,40 @@ class _AddProductScreenState extends State<AddProductScreen> {
   }
 
   void _addProduct() {
-  if (_formKey.currentState!.validate()) {
-    final productService = Provider.of<VendorProductService>(context, listen: false);
-    
-    final newProduct = Product(
-      id: '', // Let Firestore auto-generate or use proper ID generation
-      name: _nameController.text,
-      description: _descriptionController.text,
-      basePrice: double.parse(_priceController.text),
-      customerPrice: double.parse(_priceController.text),
-      imageUrls: [_imageUrlController.text],
-      category: _selectedCategory,
-      vendorId: 'vendor1',
-      vendorName: 'My Store',
-      stockQuantity: 0,
-      isFeatured: false,
-      tags: [],
-      specifications: {},
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(), // ADD THIS LINE
-    );
+    if (_formKey.currentState!.validate()) {
+      final productService = Provider.of<VendorProductService>(context, listen: false);
+      
+      final newProduct = Product(
+        id: '', // This will be overridden in vendor_product_service.dart
+        name: _nameController.text,
+        description: _descriptionController.text,
+        basePrice: double.parse(_priceController.text),
+        customerPrice: double.parse(_priceController.text),
+        imageUrls: [_imageUrlController.text],
+        category: _selectedCategory,
+        vendorId: 'vendor1',
+        vendorName: 'My Store',
+        stockQuantity: 0,
+        isFeatured: false,
+        isActive: true,
+        tags: [],
+        specifications: {},
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
 
-    productService.addProduct(newProduct);
-    
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Product added successfully!'),
-        backgroundColor: AppConfig.primaryColor,
-      ),
-    );
-    
-    Navigator.pop(context);
+      productService.addProduct(newProduct);
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Product added successfully!'),
+          backgroundColor: AppConfig.primaryColor,
+        ),
+      );
+      
+      Navigator.pop(context);
+    }
   }
-}
 
   @override
   void dispose() {
@@ -274,4 +275,3 @@ class _AddProductScreenState extends State<AddProductScreen> {
     super.dispose();
   }
 }
-
