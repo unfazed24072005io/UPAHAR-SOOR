@@ -166,4 +166,46 @@ class User {
     this.wishlist = const [],
     required this.joinedDate,
   });
+   Product copyWith({
+    String? id,
+    String? name,
+    String? description,
+    double? basePrice,
+    double? customerPrice,
+    List<String>? imageUrls,
+    String? category,
+    String? vendorId,
+    String? vendorName,
+    double? rating,
+    int? reviewCount,
+    int? stockQuantity,
+    bool? isActive,
+    bool? isFeatured,
+    List<String>? tags,
+    Map<String, dynamic>? specifications,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    return Product(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      basePrice: basePrice ?? this.basePrice,
+      customerPrice: customerPrice ?? this.customerPrice,
+      imageUrls: imageUrls ?? this.imageUrls,
+      category: category ?? this.category,
+      vendorId: vendorId ?? this.vendorId,
+      vendorName: vendorName ?? this.vendorName,
+      rating: rating ?? this.rating,
+      reviewCount: reviewCount ?? this.reviewCount,
+      stockQuantity: stockQuantity ?? this.stockQuantity,
+      isActive: isActive ?? this.isActive,
+      isFeatured: isFeatured ?? this.isFeatured,
+      tags: tags ?? this.tags,
+      specifications: specifications ?? this.specifications,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
 }
+
