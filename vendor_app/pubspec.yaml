@@ -1,5 +1,5 @@
 name: upahar_vendor
-description: Upahar Vendor App
+description: Upahar Vendor - Seller Dashboard
 
 publish_to: 'none'
 
@@ -12,8 +12,10 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.2
-  google_fonts: ^4.0.3
-  provider: ^6.0.5
+  google_fonts: ^4.0.5
+  provider: ^6.1.1
+  firebase_core: ^2.24.0
+  cloud_firestore: ^4.13.0
   shared_models:
     path: ../shared_models
 
@@ -24,3 +26,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/images/
