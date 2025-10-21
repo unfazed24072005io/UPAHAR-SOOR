@@ -13,7 +13,6 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-void main() {
   runApp(
     MultiProvider(
       providers: [
@@ -80,4 +79,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
