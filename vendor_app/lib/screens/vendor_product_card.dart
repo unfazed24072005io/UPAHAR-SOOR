@@ -17,6 +17,11 @@ class VendorProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Use imageUrls instead of imageUrl
+    String imageUrl = product.imageUrls.isNotEmpty 
+        ? product.imageUrls.first 
+        : 'https://via.placeholder.com/80';
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -40,7 +45,7 @@ class VendorProductCard extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
               image: DecorationImage(
-                image: NetworkImage(product.imageUrl ?? ''),
+                image: NetworkImage(imageUrl),
                 fit: BoxFit.cover,
               ),
             ),
