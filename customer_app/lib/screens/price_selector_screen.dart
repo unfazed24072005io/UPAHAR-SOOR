@@ -521,7 +521,7 @@ class _PriceSelectorScreenState extends State<PriceSelectorScreen> with SingleTi
 
   void _addToCart() {
     final productService = Provider.of<ProductService>(context, listen: false);
-    productService.addToCart(widget.product, quantity: _selectedQuantity);
+    productService.addToCart(widget.product);
     
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -540,3 +540,4 @@ class _PriceSelectorScreenState extends State<PriceSelectorScreen> with SingleTi
     );
   }
 }
+
