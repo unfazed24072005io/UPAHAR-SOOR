@@ -1,3 +1,4 @@
+import 'package:shared_models/models/product.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:provider/provider.dart';
@@ -229,3 +230,4 @@ class ProductCard extends StatelessWidget {
     );
   }
 }
+
