@@ -14,8 +14,16 @@ dependencies:
   cupertino_icons: ^1.0.2
   google_fonts: ^4.0.5
   provider: ^6.1.1
+  
+  # Firebase Dependencies
   firebase_core: ^2.24.0
   cloud_firestore: ^4.13.0
+  firebase_auth: ^4.17.1
+  firebase_storage: ^11.5.4
+  firebase_analytics: ^10.7.4
+  
+  # Additional Helpers
+  image_picker: ^1.0.4
   shared_models:
     path: ../shared_models
 
@@ -26,5 +34,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  
   assets:
     - assets/images/
+    - assets/icons/
