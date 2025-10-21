@@ -1,5 +1,5 @@
 name: upahar_customer
-description: Upahar Customer App
+description: Upahar Customer - Premium Shopping Experience
 
 publish_to: 'none'
 
@@ -12,10 +12,12 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.2
-  google_fonts: ^4.0.3
+  google_fonts: ^4.0.5
   carousel_slider: ^4.2.1
   flutter_rating_bar: ^4.0.1
-  provider: ^6.0.5
+  provider: ^6.1.1
+  firebase_core: ^2.24.0
+  cloud_firestore: ^4.13.0
   shared_models:
     path: ../shared_models
 
@@ -26,3 +28,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/images/
