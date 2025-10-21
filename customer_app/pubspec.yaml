@@ -13,11 +13,19 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.2
   google_fonts: ^4.0.5
-  carousel_slider: ^4.2.1
+  carousel_slider: ^5.1.1
   flutter_rating_bar: ^4.0.1
   provider: ^6.1.1
+  
+  # Firebase Dependencies
   firebase_core: ^2.24.0
   cloud_firestore: ^4.13.0
+  firebase_auth: ^4.17.1
+  firebase_storage: ^11.5.4
+  firebase_analytics: ^10.7.4
+  
+  # Additional Helpers
+  image_picker: ^1.0.4
   shared_models:
     path: ../shared_models
 
@@ -28,5 +36,16 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  
   assets:
     - assets/images/
+    - assets/icons/
+    
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins-Regular.ttf
+        - asset: assets/fonts/Poppins-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Poppins-SemiBold.ttf
+          weight: 600
