@@ -473,33 +473,35 @@ class _VendorHomeScreenState extends State<VendorHomeScreen> with SingleTickerPr
   }
 
   Widget _buildOrdersTab(VendorProductService productService) {
-    return StreamBuilder<List<Order>>(
-      stream: productService.getVendorOrders(),
-      builder: (context, snapshot) {
-        return Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Order Management',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppConfig.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Expanded(
-                child: _buildOrdersList(snapshot, productService),
-              ),
-            ],
+  return Padding(
+    padding: const EdgeInsets.all(24),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Order Management',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: AppConfig.textPrimary,
           ),
-        );
-      },
-    );
-  }
-
+        ),
+        const SizedBox(height: 16),
+        Expanded(
+          child: Center(
+            child: Text(
+              'Order functionality coming soon...',
+              style: TextStyle(
+                color: AppConfig.textSecondary,
+                fontSize: 16,
+              ),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
   Widget _buildOrdersList(AsyncSnapshot<List<Order>> snapshot, VendorProductService productService) {
     if (snapshot.connectionState == ConnectionState.waiting) {
       return const Center(child: CircularProgressIndicator());
@@ -604,3 +606,4 @@ class _VendorHomeScreenState extends State<VendorHomeScreen> with SingleTickerPr
     );
   }
 }
+
