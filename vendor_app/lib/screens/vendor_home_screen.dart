@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_models/models/app_config.dart';
+import 'package:shared_models/models/product.dart';
+import 'package:shared_models/models/order.dart';
 import '../services/vendor_product_service.dart';
 import 'vendor_product_card.dart';
 import 'add_product_screen.dart';
