@@ -35,14 +35,6 @@ class MyApp extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        // FIXED: Use CardThemeData instead of CardTheme
-        cardTheme: const CardTheme(
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(16)),
-          ),
-          color: AppConfig.cardColor,
-        ),
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
           fillColor: AppConfig.cardColor,
@@ -72,6 +64,7 @@ class MyApp extends StatelessWidget {
             color: AppConfig.textSecondary,
           ),
         ),
+        useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,
       home: const HomeScreen(),
