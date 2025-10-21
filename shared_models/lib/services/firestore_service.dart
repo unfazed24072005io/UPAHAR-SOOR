@@ -40,7 +40,13 @@ class FirestoreService {
   }
 
   Future<void> addProduct(Product product) async {
-    await _productsRef.add(product.toMap());
+    if (product.id.isEmpty) {
+      // Auto-generate ID
+      await _productsRef.add(product.toMap());
+    } else {
+      // Use provided ID
+      await _productsRef.doc(product.id).set(product.toMap());
+    }
   }
 
   Future<void> updateCustomerPrice(String productId, double customerPrice) async {
