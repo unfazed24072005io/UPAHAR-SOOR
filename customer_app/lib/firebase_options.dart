@@ -1,6 +1,3 @@
-// File: customer_app/lib/firebase_options.dart
-// File: vendor_app/lib/firebase_options.dart
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 
@@ -13,16 +10,14 @@ class DefaultFirebaseOptions {
       );
     }
 
-    // ANDROID CONFIGURATION
+    // ANDROID CONFIGURATION FOR CUSTOMER APP
     const android = FirebaseOptions(
-      apiKey: 'AIzaSyAyeLCH83Xj2A2w28N2A4_4HWaePCuLTAg', // Your API Key
-      appId: '1:123456789:android:abcdef123456', // You'll get this from Firebase
-      messagingSenderId: '123456789', // You'll get this from Firebase
-      projectId: 'upahar-xxxxx', // Your Project ID
-      storageBucket: 'upahar-xxxxx.appspot.com', // Your Storage Bucket
+      apiKey: 'AIzaSyAyeLCH83Xj2A2w28N2A4_4HWaePCuLTAg',
+      appId: '1:531294896795:android:fe14acb401f0581b2afc3e',
+      messagingSenderId: '531294896795',
+      projectId: 'upahar-ecommerce', // Your project ID
+      storageBucket: 'upahar-ecommerce.appspot.com', // Usually projectId + .appspot.com
     );
-
-    // iOS configuration would go here (optional for now)
 
     return android;
   }
