@@ -35,11 +35,28 @@ class ProductService with ChangeNotifier {
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
     ),
+    Product(
+      id: '3',
+      name: 'Running Shoes',
+      description: 'Comfortable running shoes',
+      basePrice: 129.99,
+      customerPrice: 129.99,
+      imageUrls: ['https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500'],
+      category: 'Sports',
+      vendorId: 'vendor2',
+      vendorName: 'SportZone',
+      rating: 4.7,
+      reviewCount: 256,
+      stockQuantity: 100,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    ),
   ];
 
   final List<Product> _cartItems = [];
   final List<String> _wishlist = [];
 
+  // SIMPLE GETTERS - No Stream methods
   List<Product> get products => _products;
   List<Product> get cartItems => _cartItems;
   List<String> get wishlist => _wishlist;
@@ -47,6 +64,7 @@ class ProductService with ChangeNotifier {
   double get cartTotal => _cartItems.fold(0, (sum, item) => sum + item.displayPrice);
   int get cartItemCount => _cartItems.length;
 
+  // SIMPLE METHODS
   void addToCart(Product product) {
     _cartItems.add(product);
     notifyListeners();
@@ -74,6 +92,7 @@ class ProductService with ChangeNotifier {
   Future<void> updateCustomerPrice(String productId, double customerPrice) async {
     final index = _products.indexWhere((p) => p.id == productId);
     if (index != -1) {
+      // Now copyWith will work
       _products[index] = _products[index].copyWith(customerPrice: customerPrice);
       notifyListeners();
     }
