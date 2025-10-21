@@ -40,7 +40,7 @@ class VendorProductService with ChangeNotifier {
       tags: product.tags,
       specifications: product.specifications,
       createdAt: DateTime.now(),
-      // Remove updatedAt parameter
+      updatedAt: DateTime.now(), // ADD THIS BACK - it's required
     );
     
     await _firestoreService.addProduct(newProduct);
