@@ -25,8 +25,10 @@ class VendorProductService with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) async {
+    print('🟡 Adding product: ${product.name}');
+    
     final newProduct = Product(
-      id: '',
+      id: DateTime.now().millisecondsSinceEpoch.toString(), // Generate unique ID
       name: product.name,
       description: product.description,
       basePrice: product.basePrice,
@@ -35,15 +37,23 @@ class VendorProductService with ChangeNotifier {
       category: product.category,
       vendorId: vendorId,
       vendorName: vendorName,
-      stockQuantity: product.stockQuantity,
-      isFeatured: product.isFeatured,
-      tags: product.tags,
-      specifications: product.specifications,
+      stockQuantity: product.stockQuantity ?? 0,
+      isFeatured: product.isFeatured ?? false,
+      isActive: true, // CRITICAL: Make product visible
+      tags: product.tags ?? [],
+      specifications: product.specifications ?? {},
       createdAt: DateTime.now(),
-      updatedAt: DateTime.now(), // ADD THIS BACK - it's required
+      updatedAt: DateTime.now(),
     );
     
-    await _firestoreService.addProduct(newProduct);
+    print('🟡 Product data: ${newProduct.toMap()}');
+    
+    try {
+      await _firestoreService.addProduct(newProduct);
+      print('✅ Product added successfully!');
+    } catch (e) {
+      print('❌ Error adding product: $e');
+    }
   }
 
   Future<void> updateProduct(Product product) async {
