@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_models/models/product.dart';
 import 'package:shared_models/models/app_config.dart';
 
-class PaymentScreen extends StatelessWidget {
+class PaymentScreen extends StatefulWidget {
   final Product product;
   final double selectedPrice;
   final int quantity;
@@ -14,31 +14,70 @@ class PaymentScreen extends StatelessWidget {
     required this.quantity,
   });
 
-  void _processRazorpayPayment() {
-    // TODO: Integrate Razorpay SDK
-    // This is a placeholder for Razorpay integration
-    // You'll need to add razorpay_flutter package and set up the integration
+  @override
+  State<PaymentScreen> createState() => _PaymentScreenState();
+}
+
+class _PaymentScreenState extends State<PaymentScreen> {
+  String _selectedPaymentMethod = 'Razorpay Card';
+  final double _shippingFee = 50.0;
+  final double _taxAmount = 0.0;
+
+  void _processPayment() {
+    final totalAmount = (widget.selectedPrice * widget.quantity) + _shippingFee + _taxAmount;
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Payment Successful! ₹${totalAmount.toStringAsFixed(2)} paid via $_selectedPaymentMethod'),
+        backgroundColor: Colors.green,
+        duration: const Duration(seconds: 3),
+      ),
+    );
+    
+    // Navigate to order confirmation
+    Future.delayed(const Duration(seconds: 2), () {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => OrderConfirmationScreen(
+          product: widget.product,
+          totalAmount: totalAmount,
+          paymentMethod: _selectedPaymentMethod,
+        )),
+        (route) => false,
+      );
+    });
   }
 
-  void _showRazorpayNotIntegratedDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Razorpay Integration Required'),
-        content: const Text('Razorpay payment gateway integration is not yet configured. Please contact support for manual payment processing.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
-          ),
-        ],
+  void _showPaymentMethodInfo(String method) {
+    String info = '';
+    switch (method) {
+      case 'Razorpay Card':
+        info = 'Pay securely with your Credit/Debit card';
+        break;
+      case 'Razorpay UPI':
+        info = 'Instant payment using UPI apps';
+        break;
+      case 'Razorpay Net Banking':
+        info = 'Transfer directly from your bank';
+        break;
+      case 'Cash on Delivery':
+        info = 'Pay when your order is delivered';
+        break;
+    }
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(info),
+        backgroundColor: AppConfig.primaryColor,
+        duration: const Duration(seconds: 2),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final totalAmount = selectedPrice * quantity;
+    final subtotal = widget.selectedPrice * widget.quantity;
+    final totalAmount = subtotal + _shippingFee + _taxAmount;
 
     return Scaffold(
       backgroundColor: AppConfig.backgroundColor,
@@ -83,8 +122,8 @@ class PaymentScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
                       image: DecorationImage(
-                        image: NetworkImage(product.imageUrls.isNotEmpty 
-                            ? product.imageUrls.first 
+                        image: NetworkImage(widget.product.imageUrls.isNotEmpty 
+                            ? widget.product.imageUrls.first 
                             : 'https://via.placeholder.com/60'),
                         fit: BoxFit.cover,
                       ),
@@ -98,7 +137,7 @@ class PaymentScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          product.name,
+                          widget.product.name,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -108,7 +147,7 @@ class PaymentScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Qty: $quantity',
+                          'Qty: ${widget.quantity}',
                           style: TextStyle(
                             fontSize: 14,
                             color: AppConfig.textSecondary,
@@ -120,7 +159,7 @@ class PaymentScreen extends StatelessWidget {
                   
                   // Price
                   Text(
-                    '₹${selectedPrice.toStringAsFixed(2)}',
+                    '₹${widget.selectedPrice.toStringAsFixed(2)}',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -144,41 +183,38 @@ class PaymentScreen extends StatelessWidget {
             const SizedBox(height: 16),
             
             // Payment Options
-            _buildPaymentOption('Razorpay (Credit/Debit Card)', Icons.credit_card, true),
+            _buildPaymentOption('Razorpay Card', Icons.credit_card, _selectedPaymentMethod == 'Razorpay Card'),
             const SizedBox(height: 12),
-            _buildPaymentOption('Razorpay UPI', Icons.payment, false),
+            _buildPaymentOption('Razorpay UPI', Icons.payment, _selectedPaymentMethod == 'Razorpay UPI'),
             const SizedBox(height: 12),
-            _buildPaymentOption('Razorpay Net Banking', Icons.account_balance, false),
+            _buildPaymentOption('Razorpay Net Banking', Icons.account_balance, _selectedPaymentMethod == 'Razorpay Net Banking'),
             const SizedBox(height: 12),
-            _buildPaymentOption('Cash on Delivery', Icons.local_shipping, false),
+            _buildPaymentOption('Cash on Delivery', Icons.local_shipping, _selectedPaymentMethod == 'Cash on Delivery'),
             
             const Spacer(),
             
-            // Total Amount
+            // Order Breakdown
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: AppConfig.primaryColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Column(
                 children: [
-                  Text(
-                    'Total Amount',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppConfig.textPrimary,
-                    ),
+                  _buildAmountRow('Subtotal', '₹${subtotal.toStringAsFixed(2)}'),
+                  _buildAmountRow('Shipping', '₹${_shippingFee.toStringAsFixed(2)}'),
+                  _buildAmountRow('Tax', '₹${_taxAmount.toStringAsFixed(2)}'),
+                  const SizedBox(height: 8),
+                  Container(
+                    height: 1,
+                    color: AppConfig.primaryColor.withOpacity(0.3),
                   ),
-                  Text(
+                  const SizedBox(height: 8),
+                  _buildAmountRow(
+                    'Total Amount',
                     '₹${totalAmount.toStringAsFixed(2)}',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: AppConfig.primaryColor,
-                    ),
+                    isTotal: true,
                   ),
                 ],
               ),
@@ -205,50 +241,20 @@ class PaymentScreen extends StatelessWidget {
                 ],
               ),
               child: TextButton(
-                onPressed: () => _showRazorpayNotIntegratedDialog(context),
+                onPressed: _processPayment,
                 style: TextButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: const Text(
-                  'PAY WITH RAZORPAY',
-                  style: TextStyle(
+                child: Text(
+                  'PAY ₹${totalAmount.toStringAsFixed(2)}',
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
-            ),
-            
-            // Razorpay Integration Note
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.orange.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.orange),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.info,
-                    color: Colors.orange,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'Razorpay integration pending. Currently in demo mode.',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.orange,
-                      ),
-                    ),
-                  ),
-                ],
               ),
             ),
           ],
@@ -258,38 +264,205 @@ class PaymentScreen extends StatelessWidget {
   }
 
   Widget _buildPaymentOption(String title, IconData icon, bool isSelected) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppConfig.cardColor,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isSelected ? AppConfig.primaryColor : AppConfig.primaryColor.withOpacity(0.3),
-          width: isSelected ? 2 : 1,
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedPaymentMethod = title;
+        });
+        _showPaymentMethodInfo(title);
+      },
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppConfig.cardColor,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? AppConfig.primaryColor : AppConfig.primaryColor.withOpacity(0.3),
+            width: isSelected ? 2 : 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: AppConfig.primaryColor, size: 24),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: AppConfig.textPrimary,
+                ),
+              ),
+            ),
+            Icon(
+              isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+              color: AppConfig.primaryColor,
+            ),
+          ],
         ),
       ),
+    );
+  }
+
+  Widget _buildAmountRow(String label, String amount, {bool isTotal = false}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Icon(
-            icon,
-            color: AppConfig.primaryColor,
-            size: 24,
-          ),
-          const SizedBox(width: 16),
           Text(
-            title,
+            label,
             style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
+              fontSize: isTotal ? 16 : 14,
+              fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
               color: AppConfig.textPrimary,
             ),
           ),
-          const Spacer(),
-          Icon(
-            isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
-            color: AppConfig.primaryColor,
+          Text(
+            amount,
+            style: TextStyle(
+              fontSize: isTotal ? 18 : 14,
+              fontWeight: FontWeight.bold,
+              color: isTotal ? AppConfig.primaryColor : AppConfig.textPrimary,
+            ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// Order Confirmation Screen
+class OrderConfirmationScreen extends StatelessWidget {
+  final Product product;
+  final double totalAmount;
+  final String paymentMethod;
+
+  const OrderConfirmationScreen({
+    super.key,
+    required this.product,
+    required this.totalAmount,
+    required this.paymentMethod,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppConfig.backgroundColor,
+      body: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Success Icon
+            Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(
+                color: Colors.green.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.check,
+                size: 60,
+                color: Colors.green,
+              ),
+            ),
+            const SizedBox(height: 32),
+            
+            // Success Message
+            Text(
+              'Order Confirmed!',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: AppConfig.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 16),
+            
+            Text(
+              'Thank you for your purchase',
+              style: TextStyle(
+                fontSize: 16,
+                color: AppConfig.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 32),
+            
+            // Order Details
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AppConfig.cardColor,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    product.name,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    '₹${totalAmount.toStringAsFixed(2)}',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: AppConfig.primaryColor,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Paid via: $paymentMethod',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: AppConfig.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 32),
+            
+            // Continue Shopping Button
+            Container(
+              width: double.infinity,
+              height: 56,
+              decoration: BoxDecoration(
+                color: AppConfig.primaryColor,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: TextButton(
+                onPressed: () {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
+                    (route) => false,
+                  );
+                },
+                style: TextButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                child: const Text(
+                  'CONTINUE SHOPPING',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
