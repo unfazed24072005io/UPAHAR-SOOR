@@ -132,7 +132,7 @@ class WhatsAppVideoScreen extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.whatsapp, color: Colors.white),
+                    Icon(Icons.video_call, color: Colors.white),
                     const SizedBox(width: 12),
                     Text(
                       'SCHEDULE WHATSAPP CALL',
