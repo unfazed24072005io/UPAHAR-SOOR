@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_models/models/app_config.dart';
+import 'package:shared_models/models/product.dart';
 import '../services/product_service.dart';
 import 'product_card.dart';
 import 'category_card.dart';
@@ -262,3 +263,4 @@ class UserProfileScreen extends StatelessWidget {
     );
   }
 }
+
