@@ -11,4 +11,7 @@ class AppConfig {
   static const double minPriceMultiplier = 0.5;
   static const double maxPriceMultiplier = 2.0;
   static const double priceStep = 0.1;
+  
+  // Categories
+  static const List<String> categories = ['Pets', 'Others'];
 }
