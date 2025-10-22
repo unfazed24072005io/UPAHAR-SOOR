@@ -2,7 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:shared_models/models/app_config.dart';
 import 'package:shared_models/models/user.dart';
 
-class UserProfileScreen extends StatelessWidget {
+class UserProfileScreen extends StatefulWidget {
+  UserProfileScreen({super.key});
+
+  @override
+  State<UserProfileScreen> createState() => _UserProfileScreenState();
+}
+
+class _UserProfileScreenState extends State<UserProfileScreen> {
   final User currentUser = User(
     id: 'user1',
     name: 'John Doe',
@@ -16,7 +23,8 @@ class UserProfileScreen extends StatelessWidget {
     joinedDate: DateTime(2024, 1, 1),
   );
 
-  UserProfileScreen({super.key});
+  bool _notificationsEnabled = true;
+  bool _emailUpdates = true;
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +61,15 @@ class UserProfileScreen extends StatelessWidget {
             // App Settings
             _buildSectionHeader('App Settings'),
             const SizedBox(height: 16),
-            _buildInfoCard('Notifications', Icons.notifications, _navigateToNotifications),
+            _buildNotificationSwitch('Push Notifications', _notificationsEnabled, (value) {
+              setState(() => _notificationsEnabled = value);
+              _showSnackbar('Notifications ${value ? 'enabled' : 'disabled'}');
+            }),
+            const SizedBox(height: 12),
+            _buildNotificationSwitch('Email Updates', _emailUpdates, (value) {
+              setState(() => _emailUpdates = value);
+              _showSnackbar('Email updates ${value ? 'enabled' : 'disabled'}');
+            }),
             const SizedBox(height: 12),
             _buildInfoCard('Privacy & Security', Icons.security, _navigateToPrivacy),
             const SizedBox(height: 12),
@@ -243,36 +259,374 @@ class UserProfileScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildNotificationSwitch(String title, bool value, Function(bool) onChanged) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppConfig.cardColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppConfig.primaryColor.withOpacity(0.1)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: AppConfig.primaryColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              Icons.notifications,
+              color: AppConfig.primaryColor,
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Text(
+              title,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: AppConfig.textPrimary,
+              ),
+            ),
+          ),
+          Switch(
+            value: value,
+            onChanged: onChanged,
+            activeColor: AppConfig.primaryColor,
+          ),
+        ],
+      ),
+    );
+  }
+
   void _editProfile() {
-    // Navigate to edit profile screen
-    print('Edit profile tapped');
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Edit Profile'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextFormField(
+              initialValue: currentUser.name,
+              decoration: const InputDecoration(labelText: 'Full Name'),
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              initialValue: currentUser.email,
+              decoration: const InputDecoration(labelText: 'Email'),
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              initialValue: currentUser.phone,
+              decoration: const InputDecoration(labelText: 'Phone'),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _showSnackbar('Profile updated successfully');
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
   }
 
   void _navigateToPersonalDetails() {
-    print('Personal details tapped');
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Personal Details',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppConfig.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 16),
+            _buildDetailRow('Full Name', currentUser.name),
+            _buildDetailRow('Email', currentUser.email),
+            _buildDetailRow('Phone', currentUser.phone),
+            _buildDetailRow('Member Since', '${currentUser.joinedDate.day}/${currentUser.joinedDate.month}/${currentUser.joinedDate.year}'),
+            const SizedBox(height: 20),
+            Container(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppConfig.primaryColor,
+                ),
+                child: const Text('CLOSE', style: TextStyle(color: Colors.white)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          Text(
+            '$label: ',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: AppConfig.textPrimary,
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(color: AppConfig.textSecondary),
+          ),
+        ],
+      ),
+    );
   }
 
   void _navigateToAddresses() {
-    print('Addresses tapped');
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'My Addresses',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppConfig.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ...currentUser.addresses.map((address) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppConfig.cardColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.location_on, color: AppConfig.primaryColor),
+                    const SizedBox(width: 12),
+                    Expanded(child: Text(address)),
+                  ],
+                ),
+              ),
+            )),
+            const SizedBox(height: 20),
+            Container(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => _showSnackbar('Add new address functionality'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppConfig.primaryColor,
+                ),
+                child: const Text('ADD NEW ADDRESS', style: TextStyle(color: Colors.white)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   void _navigateToPaymentMethods() {
-    print('Payment methods tapped');
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Payment Methods',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppConfig.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 16),
+            _buildPaymentMethod('Credit Card', '**** **** **** 1234'),
+            _buildPaymentMethod('UPI', 'user@upi'),
+            _buildPaymentMethod('Net Banking', 'HDFC Bank'),
+            const SizedBox(height: 20),
+            Container(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => _showSnackbar('Add new payment method'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppConfig.primaryColor,
+                ),
+                child: const Text('ADD PAYMENT METHOD', style: TextStyle(color: Colors.white)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
-  void _navigateToNotifications() {
-    print('Notifications tapped');
+  Widget _buildPaymentMethod(String type, String details) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppConfig.cardColor,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.credit_card, color: AppConfig.primaryColor),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(type, style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text(details, style: TextStyle(color: AppConfig.textSecondary)),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   void _navigateToPrivacy() {
-    print('Privacy tapped');
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Privacy & Security'),
+        content: const Text(
+          'Your privacy is important to us. We use industry-standard encryption to protect your personal information and never share your data with third parties without your consent.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('UNDERSTOOD'),
+          ),
+        ],
+      ),
+    );
   }
 
   void _navigateToHelp() {
-    print('Help tapped');
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Help & Support',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppConfig.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 16),
+            _buildSupportOption('Contact Support', Icons.support_agent, () {
+              _showSnackbar('Connecting to support...');
+            }),
+            _buildSupportOption('FAQs', Icons.help_outline, () {
+              _showSnackbar('Opening FAQs...');
+            }),
+            _buildSupportOption('Report Issue', Icons.bug_report, () {
+              _showSnackbar('Opening issue reporter...');
+            }),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSupportOption(String title, IconData icon, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        margin: const EdgeInsets.only(bottom: 8),
+        decoration: BoxDecoration(
+          color: AppConfig.cardColor,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: AppConfig.primaryColor),
+            const SizedBox(width: 16),
+            Text(title, style: TextStyle(fontSize: 16)),
+          ],
+        ),
+      ),
+    );
   }
 
   void _logout() {
-    print('Logout tapped');
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Logout'),
+        content: const Text('Are you sure you want to logout?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('CANCEL'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _showSnackbar('Logged out successfully');
+              Future.delayed(const Duration(seconds: 1), () {
+                Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+              });
+            },
+            child: const Text('LOGOUT', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: AppConfig.primaryColor,
+        duration: const Duration(seconds: 2),
+      ),
+    );
   }
 }
