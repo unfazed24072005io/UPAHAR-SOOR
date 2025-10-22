@@ -4,6 +4,8 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:shared_models/models/product.dart';
 import 'package:shared_models/models/app_config.dart';
 import '../services/product_service.dart';
+import 'payment_screen.dart';
+import 'whatsapp_video_screen.dart';
 
 class PriceSelectorScreen extends StatefulWidget {
   final Product product;
@@ -487,13 +489,13 @@ class _PriceSelectorScreenState extends State<PriceSelectorScreen> with SingleTi
 
               // Add to Cart Button
               ElevatedButton(
-                onPressed: _addToCart,
+                onPressed: _proceedToNextStep,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppConfig.primaryColor,
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 ),
                 child: const Text(
-                  'ADD TO CART',
+                  'BUY NOW',
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -519,18 +521,36 @@ class _PriceSelectorScreenState extends State<PriceSelectorScreen> with SingleTi
     );
   }
 
-  void _addToCart() {
+  void _proceedToNextStep() {
     final productService = Provider.of<ProductService>(context, listen: false);
     productService.addToCart(widget.product);
     
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${widget.product.name} added to cart'),
-        backgroundColor: Colors.green,
-      ),
-    );
-    
-    Navigator.pop(context);
+    // Check if product is in Pets category
+    if (widget.product.category == 'Pets') {
+      // Navigate to WhatsApp Video Call Screen
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => WhatsAppVideoScreen(
+            product: widget.product,
+            selectedPrice: _selectedPrice,
+            quantity: _selectedQuantity,
+          ),
+        ),
+      );
+    } else {
+      // Navigate directly to Payment Screen
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PaymentScreen(
+            product: widget.product,
+            selectedPrice: _selectedPrice,
+            quantity: _selectedQuantity,
+          ),
+        ),
+      );
+    }
   }
 
   void _shareProduct() {
@@ -540,4 +560,3 @@ class _PriceSelectorScreenState extends State<PriceSelectorScreen> with SingleTi
     );
   }
 }
-
