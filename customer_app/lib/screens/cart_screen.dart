@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_models/models/app_config.dart';
+import 'package:shared_models/models/product.dart';
 import '../services/product_service.dart';
 import 'payment_screen.dart';
 
