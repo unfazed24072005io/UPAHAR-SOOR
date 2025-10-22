@@ -578,42 +578,44 @@ class _PriceSelectorScreenState extends State<PriceSelectorScreen> with SingleTi
   }
 
   Widget _buildRatingBar(int stars, int count, int total) {
-    final percentage = total == 0 ? 0.0 : (count / total) * 100;
-    
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Row(
-        children: [
-          Text(
+  final percentage = total == 0 ? 0.0 : (count / total) * 100;
+  
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 2),
+    child: Row(
+      children: [
+        SizedBox(
+          width: 10, // MOVED width to SizedBox
+          child: Text(
             '$stars',
             style: TextStyle(
               fontSize: 12,
               color: AppConfig.textSecondary,
-              width: 10,
             ),
           ),
-          const SizedBox(width: 8),
-          Icon(Icons.star, size: 16, color: AppConfig.primaryColor),
-          const SizedBox(width: 8),
-          Expanded(
-            child: LinearProgressIndicator(
-              value: total == 0 ? 0 : count / total,
-              backgroundColor: AppConfig.cardColor,
-              color: AppConfig.primaryColor,
-            ),
+        ),
+        const SizedBox(width: 8),
+        Icon(Icons.star, size: 16, color: AppConfig.primaryColor),
+        const SizedBox(width: 8),
+        Expanded(
+          child: LinearProgressIndicator(
+            value: total == 0 ? 0 : count / total,
+            backgroundColor: AppConfig.cardColor,
+            color: AppConfig.primaryColor,
           ),
-          const SizedBox(width: 8),
-          Text(
-            '$count',
-            style: TextStyle(
-              fontSize: 12,
-              color: AppConfig.textSecondary,
-            ),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          '$count',
+          style: TextStyle(
+            fontSize: 12,
+            color: AppConfig.textSecondary,
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
 
   Widget _buildReviewCard(Map<String, dynamic> review) {
     return Container(
@@ -943,3 +945,4 @@ class _PriceSelectorScreenState extends State<PriceSelectorScreen> with SingleTi
     );
   }
 }
+
