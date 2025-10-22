@@ -124,28 +124,16 @@ class HomeScreen extends StatelessWidget {
       child: ListView(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 24),
-        children: const [
+        children: [
           CategoryCard(
-            icon: Icons.phone_iphone,
-            title: 'Electronics',
+            icon: Icons.pets,
+            title: 'Pets',
             isSelected: true,
           ),
-          SizedBox(width: 12),
+          const SizedBox(width: 12),
           CategoryCard(
-            icon: Icons.checkroom,
-            title: 'Fashion',
-            isSelected: false,
-          ),
-          SizedBox(width: 12),
-          CategoryCard(
-            icon: Icons.kitchen,
-            title: 'Home',
-            isSelected: false,
-          ),
-          SizedBox(width: 12),
-          CategoryCard(
-            icon: Icons.sports_basketball,
-            title: 'Sports',
+            icon: Icons.category,
+            title: 'Others',
             isSelected: false,
           ),
         ],
