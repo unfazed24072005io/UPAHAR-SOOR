@@ -5,6 +5,7 @@ import 'package:shared_models/models/product.dart';
 import '../services/product_service.dart';
 import 'product_card.dart';
 import 'category_card.dart';
+import 'user_profile_screen.dart'; // ADD THIS IMPORT
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -78,7 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           GestureDetector(
             onTap: () {
-              // Navigate to user profile
+              // Navigate to user profile - NOW WILL USE THE REAL ONE
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => UserProfileScreen()),
@@ -248,19 +249,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-
-// Temporary placeholder for UserProfileScreen
-class UserProfileScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('User Profile'),
-      ),
-      body: const Center(
-        child: Text('User Profile Screen - Coming Soon'),
-      ),
-    );
-  }
-}
-
