@@ -5,8 +5,23 @@ import '../services/product_service.dart';
 import 'product_card.dart';
 import 'category_card.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Start listening to Firestore stream
+    final productService = Provider.of<ProductService>(context, listen: false);
+    productService.getProductsStream().listen((firestoreProducts) {
+      productService.updateProductsFromFirestore(firestoreProducts);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +41,7 @@ class HomeScreen extends StatelessWidget {
             // Categories
             _buildCategories(),
             const SizedBox(height: 20),
-            // Products - SIMPLE GRID (no StreamBuilder)
+            // Products with StreamBuilder for real-time updates
             _buildProductsSection(context, productService),
           ],
         ),
@@ -60,17 +75,26 @@ class HomeScreen extends StatelessWidget {
               ),
             ],
           ),
-          Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              color: AppConfig.primaryColor,
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.person,
-              color: Colors.white,
-              size: 24,
+          GestureDetector(
+            onTap: () {
+              // Navigate to user profile
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => UserProfileScreen()),
+              );
+            },
+            child: Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                color: AppConfig.primaryColor,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.person,
+                color: Colors.white,
+                size: 24,
+              ),
             ),
           ),
         ],
@@ -159,35 +183,81 @@ class HomeScreen extends StatelessWidget {
                     color: AppConfig.textPrimary,
                   ),
                 ),
-                Text(
-                  'See All',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppConfig.primaryColor,
-                    fontWeight: FontWeight.w600,
+                GestureDetector(
+                  onTap: () {
+                    // Navigate to all products screen
+                  },
+                  child: Text(
+                    'See All',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: AppConfig.primaryColor,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
-            // SIMPLE GRID - No StreamBuilder
+            
+            // StreamBuilder for real-time Firestore data
             Expanded(
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 0.7,
-                ),
-                itemCount: productService.products.length,
-                itemBuilder: (context, index) {
-                  final product = productService.products[index];
-                  return ProductCard(product: product);
+              child: StreamBuilder<List<Product>>(
+                stream: productService.getProductsStream(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  
+                  if (snapshot.hasError) {
+                    print('❌ Stream error: ${snapshot.error}');
+                    // Fallback to local data
+                    return _buildProductsGrid(productService.products);
+                  }
+                  
+                  if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                    print('✅ Stream data received: ${snapshot.data!.length} products');
+                    return _buildProductsGrid(snapshot.data!);
+                  }
+                  
+                  // Fallback to local mock data
+                  return _buildProductsGrid(productService.products);
                 },
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildProductsGrid(List<Product> products) {
+    return GridView.builder(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 16,
+        childAspectRatio: 0.7,
+      ),
+      itemCount: products.length,
+      itemBuilder: (context, index) {
+        final product = products[index];
+        return ProductCard(product: product);
+      },
+    );
+  }
+}
+
+// Temporary placeholder for UserProfileScreen
+class UserProfileScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('User Profile'),
+      ),
+      body: const Center(
+        child: Text('User Profile Screen - Coming Soon'),
       ),
     );
   }
