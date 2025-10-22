@@ -10,13 +10,13 @@ class DefaultFirebaseOptions {
       );
     }
 
-    // ANDROID CONFIGURATION FOR CUSTOMER APP
+    // CORRECT ANDROID CONFIGURATION FOR CUSTOMER APP
     const android = FirebaseOptions(
       apiKey: 'AIzaSyAyeLCH83Xj2A2w28N2A4_4HWaePCuLTAg',
       appId: '1:531294896795:android:fe14acb401f0581b2afc3e',
       messagingSenderId: '531294896795',
-      projectId: 'upahar-ecommerce', // Your project ID
-      storageBucket: 'upahar-ecommerce.appspot.com', // Usually projectId + .appspot.com
+      projectId: 'upahar-bacb3', // ← CORRECT PROJECT ID
+      storageBucket: 'upahar-bacb3.firebasestorage.app', // ← CORRECT BUCKET
     );
 
     return android;
