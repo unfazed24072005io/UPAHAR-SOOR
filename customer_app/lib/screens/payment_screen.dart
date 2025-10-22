@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_models/models/product.dart';
 import 'package:shared_models/models/app_config.dart';
+import 'main_navigation_screen.dart';
 
 class PaymentScreen extends StatefulWidget {
   final Product product;
