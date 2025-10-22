@@ -409,23 +409,406 @@ class _PriceSelectorScreenState extends State<PriceSelectorScreen> with SingleTi
   }
 
   Widget _buildReviewsTab() {
-    return const SingleChildScrollView(
-      padding: EdgeInsets.all(24),
-      child: Column(
-        children: [
-          Text(
-            'Customer Reviews',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+  // Sample reviews data
+  final List<Map<String, dynamic>> reviews = [
+    {
+      'userName': 'Aarav Sharma',
+      'rating': 5.0,
+      'date': '2 days ago',
+      'comment': 'Excellent product quality! The seller was very professional and the item exceeded my expectations. Highly recommended!',
+      'verified': true,
+    },
+    {
+      'userName': 'Priya Patel',
+      'rating': 4.0,
+      'date': '1 week ago',
+      'comment': 'Good value for money. The product works as described. Delivery was fast and packaging was secure.',
+      'verified': true,
+    },
+    {
+      'userName': 'Rohan Kumar',
+      'rating': 3.5,
+      'date': '2 weeks ago',
+      'comment': 'Product is okay for the price. Could be better quality but serves the purpose.',
+      'verified': false,
+    },
+    {
+      'userName': 'Neha Gupta',
+      'rating': 5.0,
+      'date': '3 weeks ago',
+      'comment': 'Absolutely love it! The quality is premium and the seller provided great customer support. Will buy again!',
+      'verified': true,
+    },
+  ];
+
+  final double averageRating = reviews.isEmpty ? 0.0 : 
+      reviews.map((r) => r['rating'] as double).reduce((a, b) => a + b) / reviews.length;
+
+  return SingleChildScrollView(
+    padding: const EdgeInsets.all(24),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Rating Summary
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: AppConfig.cardColor,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            children: [
+              // Average Rating
+              Column(
+                children: [
+                  Text(
+                    averageRating.toStringAsFixed(1),
+                    style: const TextStyle(
+                      fontSize: 36,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  RatingBar.builder(
+                    initialRating: averageRating,
+                    minRating: 1,
+                    direction: Axis.horizontal,
+                    allowHalfRating: true,
+                    itemCount: 5,
+                    itemSize: 16,
+                    itemPadding: const EdgeInsets.symmetric(horizontal: 1),
+                    itemBuilder: (context, _) => Icon(
+                      Icons.star,
+                      color: AppConfig.primaryColor,
+                    ),
+                    onRatingUpdate: (rating) {},
+                    ignoreGestures: true,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${reviews.length} reviews',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppConfig.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(width: 20),
+              
+              // Rating Breakdown
+              Expanded(
+                child: Column(
+                  children: [
+                    _buildRatingBar(5, reviews.where((r) => r['rating'] == 5.0).length, reviews.length),
+                    _buildRatingBar(4, reviews.where((r) => r['rating'] == 4.0).length, reviews.length),
+                    _buildRatingBar(3, reviews.where((r) => r['rating'] == 3.0).length, reviews.length),
+                    _buildRatingBar(2, reviews.where((r) => r['rating'] == 2.0).length, reviews.length),
+                    _buildRatingBar(1, reviews.where((r) => r['rating'] == 1.0).length, reviews.length),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 24),
+
+        // Add Review Button
+        Container(
+          width: double.infinity,
+          height: 50,
+          decoration: BoxDecoration(
+            color: AppConfig.primaryColor,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: TextButton(
+            onPressed: _addReview,
+            child: const Text(
+              'WRITE A REVIEW',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
-          SizedBox(height: 16),
-          Text('Reviews functionality coming soon...'),
-        ],
+        ),
+        const SizedBox(height: 24),
+
+        // Reviews List
+        Text(
+          'Customer Reviews',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: AppConfig.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        if (reviews.isEmpty)
+          Container(
+            padding: const EdgeInsets.all(40),
+            child: Column(
+              children: [
+                Icon(Icons.reviews, size: 60, color: AppConfig.textSecondary),
+                const SizedBox(height: 16),
+                Text(
+                  'No reviews yet',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: AppConfig.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Be the first to review this product!',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppConfig.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          )
+        else
+          ...reviews.map((review) => _buildReviewCard(review)),
+      ],
+    ),
+  );
+}
+
+Widget _buildRatingBar(int stars, int count, int total) {
+  final percentage = total == 0 ? 0.0 : (count / total) * 100;
+  
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 2),
+    child: Row(
+      children: [
+        Text(
+          '$stars',
+          style: TextStyle(
+            fontSize: 12,
+            color: AppConfig.textSecondary,
+            width: 10,
+          ),
+        ),
+        const SizedBox(width: 8),
+        Icon(Icons.star, size: 16, color: AppConfig.primaryColor),
+        const SizedBox(width: 8),
+        Expanded(
+          child: LinearProgressIndicator(
+            value: total == 0 ? 0 : count / total,
+            backgroundColor: AppConfig.cardColor,
+            color: AppConfig.primaryColor,
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          '$count',
+          style: TextStyle(
+            fontSize: 12,
+            color: AppConfig.textSecondary,
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget _buildReviewCard(Map<String, dynamic> review) {
+  return Container(
+    margin: const EdgeInsets.only(bottom: 16),
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: AppConfig.cardColor,
+      borderRadius: BorderRadius.circular(12),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Review Header
+        Row(
+          children: [
+            // User Avatar
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: AppConfig.primaryColor,
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Text(
+                  review['userName'].toString().substring(0, 1),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            
+            // User Info
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        review['userName'],
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      if (review['verified'] == true) ...[
+                        const SizedBox(width: 6),
+                        Icon(Icons.verified, size: 14, color: Colors.blue),
+                      ],
+                    ],
+                  ),
+                  Text(
+                    review['date'],
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppConfig.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            
+            // Rating
+            RatingBar.builder(
+              initialRating: review['rating'],
+              minRating: 1,
+              direction: Axis.horizontal,
+              allowHalfRating: true,
+              itemCount: 5,
+              itemSize: 16,
+              itemPadding: const EdgeInsets.symmetric(horizontal: 1),
+              itemBuilder: (context, _) => Icon(
+                Icons.star,
+                color: AppConfig.primaryColor,
+              ),
+              onRatingUpdate: (rating) {},
+              ignoreGestures: true,
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        
+        // Review Comment
+        Text(
+          review['comment'],
+          style: TextStyle(
+            color: AppConfig.textPrimary,
+            height: 1.4,
+          ),
+        ),
+        const SizedBox(height: 12),
+        
+        // Helpful Section
+        Row(
+          children: [
+            IconButton(
+              onPressed: () {},
+              icon: Icon(Icons.thumb_up, size: 18, color: AppConfig.textSecondary),
+            ),
+            Text(
+              'Helpful',
+              style: TextStyle(
+                fontSize: 12,
+                color: AppConfig.textSecondary,
+              ),
+            ),
+            const SizedBox(width: 20),
+            IconButton(
+              onPressed: () {},
+              icon: Icon(Icons.thumb_down, size: 18, color: AppConfig.textSecondary),
+            ),
+            Text(
+              'Not Helpful',
+              style: TextStyle(
+                fontSize: 12,
+                color: AppConfig.textSecondary,
+              ),
+            ),
+          ],
+        ),
+      ],
+    ),
+  );
+}
+
+void _addReview() {
+  // Show add review dialog
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('Write a Review'),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'How would you rate this product?',
+              style: TextStyle(
+                fontSize: 16,
+                color: AppConfig.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 16),
+            RatingBar.builder(
+              initialRating: 0,
+              minRating: 1,
+              direction: Axis.horizontal,
+              allowHalfRating: true,
+              itemCount: 5,
+              itemSize: 40,
+              itemPadding: const EdgeInsets.symmetric(horizontal: 4),
+              itemBuilder: (context, _) => Icon(
+                Icons.star,
+                color: AppConfig.primaryColor,
+              ),
+              onRatingUpdate: (rating) {
+                print('Rating: $rating');
+              },
+            ),
+            const SizedBox(height: 20),
+            TextFormField(
+              maxLines: 4,
+              decoration: const InputDecoration(
+                labelText: 'Your Review',
+                border: OutlineInputBorder(),
+                hintText: 'Share your experience with this product...',
+              ),
+            ),
+          ],
+        ),
       ),
-    );
-  }
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('CANCEL'),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Review submitted successfully!'),
+                backgroundColor: Colors.green,
+              ),
+            );
+          },
+          child: const Text('SUBMIT'),
+        ),
+      ],
+    ),
+  );
+}
 
   Widget _buildBottomBar() {
     return Container(
@@ -560,3 +943,4 @@ class _PriceSelectorScreenState extends State<PriceSelectorScreen> with SingleTi
     );
   }
 }
+
