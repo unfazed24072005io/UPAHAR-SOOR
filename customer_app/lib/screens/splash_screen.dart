@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_models/models/app_config.dart';
-import 'main_navigation_screen.dart';
+import 'home_screen.dart'; // CHANGE THIS - MainNavigationScreen is in home_screen.dart
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -33,7 +33,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     Future.delayed(const Duration(seconds: 3), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
+        MaterialPageRoute(builder: (context) => MainNavigationScreen()), // REMOVE const
       );
     });
   }
