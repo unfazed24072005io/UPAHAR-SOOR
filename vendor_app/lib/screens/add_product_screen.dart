@@ -17,16 +17,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
   final _descriptionController = TextEditingController();
   final _priceController = TextEditingController();
   final _imageUrlController = TextEditingController();
-  String _selectedCategory = 'Electronics';
+  String _selectedCategory = 'Pets';
 
-  final List<String> _categories = [
-    'Electronics',
-    'Fashion',
-    'Home',
-    'Sports',
-    'Beauty',
-    'Books'
-  ];
+  final List<String> _categories = AppConfig.categories;
 
   @override
   Widget build(BuildContext context) {
