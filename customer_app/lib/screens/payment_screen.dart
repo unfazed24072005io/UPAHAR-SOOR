@@ -14,6 +14,28 @@ class PaymentScreen extends StatelessWidget {
     required this.quantity,
   });
 
+  void _processRazorpayPayment() {
+    // TODO: Integrate Razorpay SDK
+    // This is a placeholder for Razorpay integration
+    // You'll need to add razorpay_flutter package and set up the integration
+  }
+
+  void _showRazorpayNotIntegratedDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Razorpay Integration Required'),
+        content: const Text('Razorpay payment gateway integration is not yet configured. Please contact support for manual payment processing.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final totalAmount = selectedPrice * quantity;
@@ -122,13 +144,13 @@ class PaymentScreen extends StatelessWidget {
             const SizedBox(height: 16),
             
             // Payment Options
-            _buildPaymentOption('Credit/Debit Card', Icons.credit_card),
+            _buildPaymentOption('Razorpay (Credit/Debit Card)', Icons.credit_card, true),
             const SizedBox(height: 12),
-            _buildPaymentOption('UPI Payment', Icons.payment),
+            _buildPaymentOption('Razorpay UPI', Icons.payment, false),
             const SizedBox(height: 12),
-            _buildPaymentOption('Net Banking', Icons.account_balance),
+            _buildPaymentOption('Razorpay Net Banking', Icons.account_balance, false),
             const SizedBox(height: 12),
-            _buildPaymentOption('Cash on Delivery', Icons.local_shipping),
+            _buildPaymentOption('Cash on Delivery', Icons.local_shipping, false),
             
             const Spacer(),
             
@@ -183,22 +205,14 @@ class PaymentScreen extends StatelessWidget {
                 ],
               ),
               child: TextButton(
-                onPressed: () {
-                  // Handle payment processing
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: const Text('Payment functionality coming soon...'),
-                      backgroundColor: AppConfig.primaryColor,
-                    ),
-                  );
-                },
+                onPressed: () => _showRazorpayNotIntegratedDialog(context),
                 style: TextButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
                 child: const Text(
-                  'PAY NOW',
+                  'PAY WITH RAZORPAY',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -207,19 +221,52 @@ class PaymentScreen extends StatelessWidget {
                 ),
               ),
             ),
+            
+            // Razorpay Integration Note
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.orange.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.orange),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.info,
+                    color: Colors.orange,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Razorpay integration pending. Currently in demo mode.',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.orange,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildPaymentOption(String title, IconData icon) {
+  Widget _buildPaymentOption(String title, IconData icon, bool isSelected) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppConfig.cardColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppConfig.primaryColor.withOpacity(0.3)),
+        border: Border.all(
+          color: isSelected ? AppConfig.primaryColor : AppConfig.primaryColor.withOpacity(0.3),
+          width: isSelected ? 2 : 1,
+        ),
       ),
       child: Row(
         children: [
@@ -239,7 +286,7 @@ class PaymentScreen extends StatelessWidget {
           ),
           const Spacer(),
           Icon(
-            Icons.radio_button_unchecked,
+            isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
             color: AppConfig.primaryColor,
           ),
         ],
