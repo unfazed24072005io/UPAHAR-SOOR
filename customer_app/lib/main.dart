@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_models/models/app_config.dart';
-import 'screens/home_screen.dart';
+import 'screens/splash_screen.dart';
 import 'services/product_service.dart';
 import 'firebase_options.dart'; // Import the config
 
@@ -80,5 +80,6 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
 
 
