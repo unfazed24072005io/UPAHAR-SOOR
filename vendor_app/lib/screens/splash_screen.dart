@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_models/models/app_config.dart';
-import 'vendor_home_screen.dart';
+import 'vendor_home_screen.dart'; // Import vendor home screen directly
 
 class VendorSplashScreen extends StatefulWidget {
   const VendorSplashScreen({super.key});
