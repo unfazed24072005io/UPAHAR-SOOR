@@ -10,7 +10,6 @@ class FirestoreService {
   Stream<List<Product>> getProducts() {
     return _productsRef
         .where('isActive', isEqualTo: true)
-        .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) {
@@ -35,7 +34,6 @@ class FirestoreService {
     return _productsRef
         .where('vendorId', isEqualTo: vendorId)
         .where('isActive', isEqualTo: true)
-        .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => Product.fromMap(doc.id, doc.data() as Map<String, dynamic>))
@@ -103,3 +101,4 @@ class FirestoreService {
     });
   }
 }
+
