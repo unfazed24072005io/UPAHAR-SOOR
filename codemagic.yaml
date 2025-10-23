@@ -7,10 +7,14 @@ workflows:
       - name: Fix Android project
         script: |
           cd customer_app
-          mv android android_backup
-          flutter create --org com.upahar --project-name upahar_customer --platforms android .
-          rm -rf android
-          mv android_backup android
+          # Only recreate if android folder exists and is corrupted
+          if [ -d "android" ]; then
+            echo "Repairing Android project..."
+            flutter create --org com.upahar --project-name upahar_customer --platforms android --overwrite .
+          else
+            echo "Android folder missing, creating fresh..."
+            flutter create --org com.upahar --project-name upahar_customer --platforms android .
+          fi
       - name: Get dependencies
         script: |
           cd customer_app
@@ -30,10 +34,14 @@ workflows:
       - name: Fix Android project
         script: |
           cd vendor_app
-          mv android android_backup
-          flutter create --org com.upahar --project-name upahar_vendor --platforms android .
-          rm -rf android
-          mv android_backup android
+          # Only recreate if android folder exists and is corrupted
+          if [ -d "android" ]; then
+            echo "Repairing Android project..."
+            flutter create --org com.upahar --project-name upahar_vendor --platforms android --overwrite .
+          else
+            echo "Android folder missing, creating fresh..."
+            flutter create --org com.upahar --project-name upahar_vendor --platforms android .
+          fi
       - name: Get dependencies
         script: |
           cd vendor_app
