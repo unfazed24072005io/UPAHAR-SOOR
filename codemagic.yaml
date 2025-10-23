@@ -4,10 +4,6 @@ workflows:
     environment:
       flutter: stable
     scripts:
-      - name: Create proper Flutter project
-        script: |
-          cd customer_app
-          flutter create --org com.upahar --project-name upahar_customer --platforms android .
       - name: Get dependencies
         script: |
           cd customer_app
@@ -24,10 +20,6 @@ workflows:
     environment:
       flutter: stable
     scripts:
-      - name: Create proper Flutter project
-        script: |
-          cd vendor_app
-          flutter create --org com.upahar --project-name upahar_vendor --platforms android .
       - name: Get dependencies
         script: |
           cd vendor_app
