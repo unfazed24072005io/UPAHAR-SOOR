@@ -4,6 +4,13 @@ workflows:
     environment:
       flutter: stable
     scripts:
+      - name: Fix Android project
+        script: |
+          cd customer_app
+          mv android android_backup
+          flutter create --org com.upahar --project-name upahar_customer --platforms android .
+          rm -rf android
+          mv android_backup android
       - name: Get dependencies
         script: |
           cd customer_app
@@ -20,6 +27,13 @@ workflows:
     environment:
       flutter: stable
     scripts:
+      - name: Fix Android project
+        script: |
+          cd vendor_app
+          mv android android_backup
+          flutter create --org com.upahar --project-name upahar_vendor --platforms android .
+          rm -rf android
+          mv android_backup android
       - name: Get dependencies
         script: |
           cd vendor_app
