@@ -17,15 +17,27 @@ class ProductService with ChangeNotifier {
 
   // Stream for real-time products from Firestore
   Stream<List<Product>> getProductsStream() {
+    print('🟡 Getting products from Firestore...');
     return _firestoreService.getProducts();
   }
 
-  // Initialize with mock data (fallback)
+  // Initialize - COMMENT OUT MOCK DATA TO FORCE FIRESTORE
   ProductService() {
-    _initializeMockData();
+    print('🟡 ProductService initialized');
+    // _initializeMockData(); // ← COMMENT THIS OUT TO TEST FIRESTORE
+    
+    // Listen to Firestore stream
+    getProductsStream().listen((firestoreProducts) {
+      _updateProductsFromFirestore(firestoreProducts);
+    }, onError: (error) {
+      print('❌ Firestore stream error: $error');
+      // Fallback to mock data if Firestore fails
+      _initializeMockData();
+    });
   }
 
   void _initializeMockData() {
+    print('🟡 Loading mock data...');
     _products.addAll([
       Product(
         id: '1',
@@ -52,23 +64,23 @@ class ProductService with ChangeNotifier {
       ),
       Product(
         id: '2',
-        name: 'Golden Retriever Puppy',
-        description: 'Healthy and playful golden retriever puppy with vaccination',
+        name: 'Smart Watch',
+        description: 'Feature-rich smartwatch with health monitoring',
         basePrice: 299.99,
         customerPrice: 299.99,
-        imageUrls: ['https://images.unsplash.com/photo-1554456854-55a089fd4cb2?w=500'],
-        category: 'Pets',
+        imageUrls: ['https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500'],
+        category: 'Others',
         vendorId: 'vendor1',
-        vendorName: 'Pet Paradise',
-        rating: 4.8,
+        vendorName: 'TechGadgets',
+        rating: 4.2,
         reviewCount: 89,
-        stockQuantity: 5,
+        stockQuantity: 30,
         isFeatured: true,
-        tags: ['puppy', 'golden retriever'],
+        tags: ['smartwatch', 'fitness'],
         specifications: {
-          'Age': '3 months',
-          'Vaccination': 'Complete',
-          'Gender': 'Male'
+          'Display': '1.7" AMOLED',
+          'Battery': '7 days',
+          'Water Resistance': '50m'
         },
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
@@ -97,6 +109,20 @@ class ProductService with ChangeNotifier {
         updatedAt: DateTime.now(),
       ),
     ]);
+    print('✅ Mock data loaded: ${_products.length} products');
+    notifyListeners();
+  }
+
+  void _updateProductsFromFirestore(List<Product> firestoreProducts) {
+    if (firestoreProducts.isNotEmpty) {
+      print('✅ Firestore data received: ${firestoreProducts.length} products');
+      _products.clear();
+      _products.addAll(firestoreProducts);
+      notifyListeners();
+    } else {
+      print('🟡 No products from Firestore, using mock data');
+      _initializeMockData();
+    }
   }
 
   void addToCart(Product product) {
@@ -132,14 +158,5 @@ class ProductService with ChangeNotifier {
     
     // Also update in Firestore
     await _firestoreService.updateCustomerPrice(productId, customerPrice);
-  }
-
-  // Update products from Firestore
-  void updateProductsFromFirestore(List<Product> firestoreProducts) {
-    if (firestoreProducts.isNotEmpty) {
-      _products.clear();
-      _products.addAll(firestoreProducts);
-      notifyListeners();
-    }
   }
 }
