@@ -44,11 +44,7 @@ class FirestoreService {
     try {
       print('🟡 Starting to add product: ${product.name}');
       
-      // Convert to map and ensure field names match Firestore
-      final productData = product.toMap();
-      
-      // Ensure field names match your Firestore document structure
-      final firestoreData = {
+      final productData = {
         'name': product.name,
         'description': product.description,
         'basePrice': product.basePrice,
@@ -60,29 +56,21 @@ class FirestoreService {
         'rating': product.rating,
         'reviewCount': product.reviewCount,
         'stockQuantity': product.stockQuantity,
-        'isActive': product.isActive,
+        'isActive': true,
         'isFeatured': product.isFeatured,
         'tags': product.tags,
         'specifications': product.specifications,
-        'createdAt': FieldValue.serverTimestamp(), // Use server timestamp
+        'createdAt': FieldValue.serverTimestamp(),
         'updatedAt': FieldValue.serverTimestamp(),
       };
       
-      print('🟡 Firestore data to be saved: $firestoreData');
+      print('🟡 Firestore data: $productData');
       
-      if (product.id.isEmpty) {
-        // Auto-generate ID
-        final docRef = await _productsRef.add(firestoreData);
-        print('✅ Product added with ID: ${docRef.id}');
-      } else {
-        // Use provided ID
-        await _productsRef.doc(product.id).set(firestoreData);
-        print('✅ Product added with provided ID: ${product.id}');
-      }
+      await _productsRef.add(productData);
+      print('✅ Product added to Firestore!');
       
-      print('✅ Product added successfully!');
     } catch (e) {
-      print('❌ Error adding product: $e');
+      print('❌ Firestore error: $e');
       rethrow;
     }
   }
@@ -101,4 +89,3 @@ class FirestoreService {
     });
   }
 }
-
