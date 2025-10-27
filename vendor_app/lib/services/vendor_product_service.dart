@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_models/models/product.dart';
-// REMOVE this line: import 'package:shared_models/models/order.dart';
+import 'package:shared_models/models/order.dart' as custom_order; // ALIAS to avoid conflict
 import 'package:shared_models/services/firestore_service.dart';
 
 class VendorProductService with ChangeNotifier {
@@ -9,14 +9,13 @@ class VendorProductService with ChangeNotifier {
   final String vendorId = 'vendor1';
   final String vendorName = 'My Store';
   
-  // Remove Order-related code temporarily
-  // List<Order> _orders = [];
+  List<custom_order.Order> _orders = [];
   double _totalRevenue = 0;
   int _totalOrders = 0;
   int _activeProducts = 0;
 
   // Getters
-  // List<Order> get orders => _orders;
+  List<custom_order.Order> get orders => _orders;
   double get totalRevenue => _totalRevenue;
   int get totalOrders => _totalOrders;
   int get activeProducts => _activeProducts;
@@ -90,29 +89,23 @@ class VendorProductService with ChangeNotifier {
     }
   }
 
-  // Remove Order methods temporarily
-  /*
-  Stream<List<Order>> getVendorOrders() {
-    return Stream.value([]);
+  // Order Methods
+  Stream<List<custom_order.Order>> getVendorOrders() {
+    // TODO: Implement actual vendor orders from Firestore
+    return Stream.value([]); // Temporary empty stream
   }
 
   Future<void> updateOrderStatus(String orderId, String status) async {
+    // TODO: Implement actual order status update in Firestore
     print('Update order $orderId to $status');
     notifyListeners();
   }
 
-  void updateAnalytics(List<Product> products, List<Order> orders) {
+  // Analytics Methods
+  void updateAnalytics(List<Product> products, List<custom_order.Order> orders) {
     _activeProducts = products.where((p) => p.isActive ?? true).length;
     _totalOrders = orders.length;
     _totalRevenue = orders.fold(0, (sum, order) => sum + (order.totalAmount ?? 0));
-    notifyListeners();
-  }
-  */
-
-  // Simple analytics without orders
-  void updateAnalytics(List<Product> products) {
-    _activeProducts = products.where((p) => p.isActive ?? true).length;
-    // _totalOrders and _totalRevenue will be 0 for now
     notifyListeners();
   }
 
