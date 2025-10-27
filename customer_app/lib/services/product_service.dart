@@ -28,7 +28,7 @@ class ProductService with ChangeNotifier {
     
     // Listen to Firestore stream
     getProductsStream().listen((firestoreProducts) {
-      _updateProductsFromFirestore(firestoreProducts);
+      updateProductsFromFirestore(firestoreProducts);
     }, onError: (error) {
       print('❌ Firestore stream error: $error');
       // Fallback to mock data if Firestore fails
@@ -160,4 +160,5 @@ class ProductService with ChangeNotifier {
     await _firestoreService.updateCustomerPrice(productId, customerPrice);
   }
 }
+
 
