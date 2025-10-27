@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_models/models/product.dart';
 import 'package:shared_models/models/order.dart';
 import 'package:shared_models/services/firestore_service.dart';
@@ -25,44 +26,75 @@ class VendorProductService with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) async {
-    print('🟡 Adding product: ${product.name}');
-    
-    final newProduct = Product(
-      id: DateTime.now().millisecondsSinceEpoch.toString(), // Generate unique ID
-      name: product.name,
-      description: product.description,
-      basePrice: product.basePrice,
-      customerPrice: product.basePrice,
-      imageUrls: product.imageUrls,
-      category: product.category,
-      vendorId: vendorId,
-      vendorName: vendorName,
-      stockQuantity: product.stockQuantity ?? 0,
-      isFeatured: product.isFeatured ?? false,
-      isActive: true, // CRITICAL: Make product visible
-      tags: product.tags ?? [],
-      specifications: product.specifications ?? {},
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    );
-    
-    print('🟡 Product data: ${newProduct.toMap()}');
-    
     try {
-      await _firestoreService.addProduct(newProduct);
-      print('✅ Product added successfully!');
+      print('🟡 Starting to add product: ${product.name}');
+      
+      // Convert to Firestore data with proper timestamps
+      final firestoreData = {
+        'name': product.name,
+        'description': product.description,
+        'basePrice': product.basePrice,
+        'customerPrice': product.customerPrice ?? product.basePrice,
+        'imageUrls': product.imageUrls,
+        'category': product.category,
+        'vendorId': vendorId,
+        'vendorName': vendorName,
+        'rating': product.rating,
+        'reviewCount': product.reviewCount,
+        'stockQuantity': product.stockQuantity,
+        'isActive': true, // CRITICAL: Make product visible
+        'isFeatured': product.isFeatured ?? false,
+        'tags': product.tags ?? [],
+        'specifications': product.specifications ?? {},
+        'createdAt': FieldValue.serverTimestamp(), // SERVER TIMESTAMP
+        'updatedAt': FieldValue.serverTimestamp(), // SERVER TIMESTAMP
+      };
+      
+      print('🟡 Firestore data to be saved: $firestoreData');
+      
+      // Add to Firestore
+      await _productsRef.add(firestoreData);
+      print('✅ Product added successfully to Firestore!');
+      
+      // Show success feedback
+      _showSuccessMessage('Product "${product.name}" added successfully!');
+      
     } catch (e) {
-      print('❌ Error adding product: $e');
+      print('❌ Error adding product to Firestore: $e');
+      _showErrorMessage('Failed to add product: $e');
     }
   }
 
   Future<void> updateProduct(Product product) async {
-    // TODO: Implement update product
-    print('Update product: ${product.name}');
+    try {
+      await _productsRef.doc(product.id).update({
+        'name': product.name,
+        'description': product.description,
+        'basePrice': product.basePrice,
+        'customerPrice': product.customerPrice,
+        'imageUrls': product.imageUrls,
+        'category': product.category,
+        'stockQuantity': product.stockQuantity,
+        'isFeatured': product.isFeatured,
+        'tags': product.tags,
+        'specifications': product.specifications,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+      print('✅ Product updated successfully!');
+    } catch (e) {
+      print('❌ Error updating product: $e');
+    }
   }
 
   Future<void> deleteProduct(String productId) async {
-    await _firestoreService.deleteProduct(productId);
+    try {
+      await _firestoreService.deleteProduct(productId);
+      print('✅ Product deleted successfully!');
+      _showSuccessMessage('Product deleted successfully!');
+    } catch (e) {
+      print('❌ Error deleting product: $e');
+      _showErrorMessage('Failed to delete product: $e');
+    }
   }
 
   // Order Methods
@@ -83,5 +115,18 @@ class VendorProductService with ChangeNotifier {
     _totalOrders = orders.length;
     _totalRevenue = orders.fold(0, (sum, order) => sum + (order.totalAmount ?? 0));
     notifyListeners();
+  }
+
+  // Helper Methods
+  CollectionReference get _productsRef => FirebaseFirestore.instance.collection('products');
+
+  void _showSuccessMessage(String message) {
+    // This would typically use a ScaffoldMessenger in the UI
+    print('✅ $message');
+  }
+
+  void _showErrorMessage(String message) {
+    // This would typically use a ScaffoldMessenger in the UI  
+    print('❌ $message');
   }
 }
