@@ -113,7 +113,7 @@ class ProductService with ChangeNotifier {
     notifyListeners();
   }
 
-  void _updateProductsFromFirestore(List<Product> firestoreProducts) {
+  void updateProductsFromFirestore(List<Product> firestoreProducts) {
     if (firestoreProducts.isNotEmpty) {
       print('✅ Firestore data received: ${firestoreProducts.length} products');
       _products.clear();
@@ -160,3 +160,4 @@ class ProductService with ChangeNotifier {
     await _firestoreService.updateCustomerPrice(productId, customerPrice);
   }
 }
+
