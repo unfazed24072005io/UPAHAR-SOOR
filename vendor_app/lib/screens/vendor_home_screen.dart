@@ -114,15 +114,15 @@ class _VendorHomeScreenState extends State<VendorHomeScreen> with SingleTickerPr
     return StreamBuilder<List<Product>>(
       stream: productService.getVendorProducts(),
       builder: (context, productsSnapshot) {
-        return StreamBuilder<List<Order>>(
-          stream: productService.getVendorOrders(),
-          builder: (context, ordersSnapshot) {
-            if (productsSnapshot.hasData && ordersSnapshot.hasData) {
-              productService.updateAnalytics(
-                productsSnapshot.data!,
-                ordersSnapshot.data!,
-              );
-            }
+        return StreamBuilder<List<custom_order.Order>>( // ADD custom_order. prefix
+  stream: productService.getVendorOrders(),
+  builder: (context, ordersSnapshot) {
+    if (productsSnapshot.hasData && ordersSnapshot.hasData) {
+      productService.updateAnalytics(
+        productsSnapshot.data!,
+        ordersSnapshot.data!, // NOW CORRECT - 2 parameters
+      );
+    }
 
             return SingleChildScrollView(
               padding: const EdgeInsets.all(24),
@@ -606,4 +606,5 @@ class _VendorHomeScreenState extends State<VendorHomeScreen> with SingleTickerPr
     );
   }
 }
+
 
