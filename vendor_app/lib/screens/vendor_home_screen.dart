@@ -114,15 +114,15 @@ class _VendorHomeScreenState extends State<VendorHomeScreen> with SingleTickerPr
     return StreamBuilder<List<Product>>(
       stream: productService.getVendorProducts(),
       builder: (context, productsSnapshot) {
-        return StreamBuilder<List<custom_order.Order>>( // ADD custom_order. prefix
-  stream: productService.getVendorOrders(),
-  builder: (context, ordersSnapshot) {
-    if (productsSnapshot.hasData && ordersSnapshot.hasData) {
-      productService.updateAnalytics(
-        productsSnapshot.data!,
-        ordersSnapshot.data!, // NOW CORRECT - 2 parameters
-      );
-    }
+        return StreamBuilder<List<Order>>(
+          stream: productService.getVendorOrders(),
+          builder: (context, ordersSnapshot) {
+            if (productsSnapshot.hasData && ordersSnapshot.hasData) {
+              productService.updateAnalytics(
+                productsSnapshot.data!,
+                ordersSnapshot.data!,
+              );
+            }
 
             return SingleChildScrollView(
               padding: const EdgeInsets.all(24),
@@ -473,35 +473,33 @@ class _VendorHomeScreenState extends State<VendorHomeScreen> with SingleTickerPr
   }
 
   Widget _buildOrdersTab(VendorProductService productService) {
-  return Padding(
-    padding: const EdgeInsets.all(24),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Order Management',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: AppConfig.textPrimary,
-          ),
-        ),
-        const SizedBox(height: 16),
-        Expanded(
-          child: Center(
-            child: Text(
-              'Order functionality coming soon...',
-              style: TextStyle(
-                color: AppConfig.textSecondary,
-                fontSize: 16,
+    return StreamBuilder<List<Order>>(
+      stream: productService.getVendorOrders(),
+      builder: (context, snapshot) {
+        return Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Order Management',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: AppConfig.textPrimary,
+                ),
               ),
-            ),
+              const SizedBox(height: 16),
+              Expanded(
+                child: _buildOrdersList(snapshot, productService),
+              ),
+            ],
           ),
-        ),
-      ],
-    ),
-  );
-}
+        );
+      },
+    );
+  }
+
   Widget _buildOrdersList(AsyncSnapshot<List<Order>> snapshot, VendorProductService productService) {
     if (snapshot.connectionState == ConnectionState.waiting) {
       return const Center(child: CircularProgressIndicator());
@@ -512,7 +510,25 @@ class _VendorHomeScreenState extends State<VendorHomeScreen> with SingleTickerPr
     }
 
     if (!snapshot.hasData || snapshot.data!.isEmpty) {
-      return const Center(child: Text('No orders yet'));
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.shopping_bag, size: 64, color: Colors.grey),
+            SizedBox(height: 16),
+            Text(
+              'No orders yet',
+              style: TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+            SizedBox(height: 8),
+            Text(
+              'Orders will appear here when customers purchase your products',
+              style: TextStyle(fontSize: 14, color: Colors.grey),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      );
     }
 
     return ListView.builder(
@@ -543,7 +559,7 @@ class _VendorHomeScreenState extends State<VendorHomeScreen> with SingleTickerPr
                   ),
                 ),
                 Text(
-                  '₹${order.grandTotal.toStringAsFixed(0)}',
+                  '₹${order.totalAmount.toStringAsFixed(0)}',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: AppConfig.primaryColor,
@@ -605,6 +621,10 @@ class _VendorHomeScreenState extends State<VendorHomeScreen> with SingleTickerPr
       ),
     );
   }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 }
-
-
